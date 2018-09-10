@@ -1,10 +1,6 @@
-PROJECT	   ____     __  __   ______
-	  / __ \   |  \/  | /  ____|
-	 / |__| \  | |  | | \____|_ 
-	/  ____  \ |  \/  |  _|__  \
-       |__|    |__||__||__| |______/
+
 NAME
-    # AMS - Automated Monitoring System
+#AMS - Automated Monitoring System
 
 SYNOPSIS
      ams [options] [name...]
