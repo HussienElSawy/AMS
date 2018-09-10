@@ -145,7 +145,8 @@
   mentioned below with the one of the following subjects
   
   **Mail: Hussien.ElSawy@outlook.com**
+	
 	Subjects:
-		 * **AMS Request :**	to request new function
-		 * **AMS Issue   :** 	to report an issue
-		 * **AMS General :** 	for any other topic
+		- AMS Request :	to request new function
+		- AMS Issue   : 	to report an issue
+		- AMS General :	for any other topic
