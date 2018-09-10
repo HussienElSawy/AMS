@@ -1,5 +1,3 @@
-
-NAME
 #AMS - Automated Monitoring System
 
 SYNOPSIS
