@@ -1,0 +1,226 @@
+#!/bin/bash
+path=`pwd` #home directory
+kpis=$path/kpis #kpis direcotory
+bin=$path/bin #bin directory
+
+echo "path=$path" > $bin/paths
+echo "kpis=$kpis" >> $bin/paths
+echo "bin=$bin" >> $bin/paths
+chmod -R 777 $path
+
+#show error messages
+error_message()
+{
+key="$1"
+value="$2"
+case $key in
+	help_e)
+		echo "ams: try 'ams --help' or 'ams --manual' for more information"
+		;;
+	1)
+		echo "Error 1: Unsupported option"
+		;;
+	edit_e)
+		echo "Please review help \"AMS --help [option..]\""
+		;;
+	2)
+		echo "Error 2: Failed to start KPI"
+		;;
+	3)
+		echo "Error 3: Failed to stop KPI"
+		;;
+	*)
+		echo "unknown error"
+		;;
+esac
+}
+
+#check if command had empty values
+check_value()
+{
+if [ -z $1 ]
+then
+   error_message "help_e"
+   exit 1
+fi
+}
+
+#start the kpi
+start_value()
+{
+if [ $1 == "all" ]
+  then
+	for i in `ps -ef | grep "$path" | grep -v grep | awk '{ print $2 }'`
+	do
+		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
+		do
+			kill -9 $j
+		done
+	done
+    ls $kpis > all.txt
+	for i in `cat all.txt`
+	do
+		cd $kpis/$i
+		echo "Starting $i ..."
+		nohup $bin/timer $i &
+		cd $path
+		rm -f all.txt
+	done
+echo "All KPIs Started"
+else
+   cd $kpis/$1
+	echo "Starting $1 ..."
+	for i in `ps -ef | grep "$path" | grep -v grep | grep -i $1 | awk '{ print $2 }'`
+	do
+		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
+		do
+			kill -9 $j
+		done
+	done
+	nohup $bin/timer $1 &
+	cd $path
+	echo "Started"
+fi
+}
+
+#stop the kpi
+stop_value()
+{
+if [ $1 == "all" ]
+  then
+  echo "Stopping All KPIs"
+    for i in `ps -ef | grep "$path" | grep -v grep | awk '{ print $2 }'`
+	do
+		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
+		do
+			kill -9 $j
+		done
+	done
+echo "All KPIs Stopped!"
+else
+echo "Stopping $1"
+   for i in `ps -ef | grep "$path" | grep -v grep | grep -i $1 | awk '{ print $2 }'`
+	do
+		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
+		do
+			kill -9 $j
+		done
+	done
+sleep 1
+echo "$1 Stopped!"
+fi
+}
+
+
+edit_value()
+{
+case $1 in
+	   --conf | -c)
+			check_value $2
+			vi $kpis/$2/kpi.conf
+			exit 1
+		;;
+		--query | -q)
+			check_value $2
+			. $kpis/$2/kpi.conf
+			vi $path/kpis/$2/$Query_File
+			exit 1
+		;;
+		--mail_list | -m)
+			check_value $2
+			. $kpis/$2/kpi.conf
+			vi $path/kpis/$2/$Mail_List
+			exit 1
+		;;
+		--sms_list | -s)
+			check_value $2
+			. $kpis/$2/kpi.conf
+			vi $path/kpis/$2/$SMS_List
+			exit 1
+		;;
+       *)
+         error_message "edit_e"
+		 error_message "help_e"
+         exit 1
+      ;;
+	esac
+}
+
+help_value()
+{
+	case $1 in
+	   conf | create | delete | edit | stop | start | test)
+			more $path/help/help_$1
+			exit 1
+		;;
+       *)
+		 error_message "1"
+         error_message "help_e"
+         exit 1
+      ;;
+	esac
+}
+#CLI Functions (1 variable or less)
+while [[ $# -le 1 ]]
+do
+	key="$1"
+	case $key in
+	   --help | -h )
+          more $path/help/help
+		  exit 1
+       ;;
+	   --about | -a )
+          more $path/help/about
+		  exit 1
+       ;;
+	   --manual | -M )
+          more $path/help/manual
+		  exit 1
+       ;;
+       *)
+	     error_message "1"
+         error_message "help_e"
+         exit 1
+      ;;
+	esac
+done
+
+#CLI Functions (more than 1 variable)
+while [[ $# -gt 1 ]]
+do
+	key="$1"
+	value="$2"
+	value2="$3"
+	check_value $value
+	case $key in
+       --start | -s)
+		  start_value $value
+		  exit 1
+       ;;
+	   --stop | -p)
+		  stop_value $value
+		  exit 1
+       ;;
+	   --create | -c)
+		  cp -r $bin/template $kpis/$value
+		  exit 1
+       ;;
+	   --delete | -d)
+		  rm -r $path/kpis/$value
+		  exit 1
+       ;;
+	   --edit | -e)
+			edit_value $value $value2
+			exit 1
+		;;
+		--help | -h)
+		help_value $value
+		exit 1
+		;;
+       *)
+	     error_message "1" 
+         error_message "help_e"
+         exit 1
+      ;;
+	esac
+done

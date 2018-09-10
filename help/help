@@ -1,0 +1,13 @@
+Automated Monitoring System Version 3.1 [AMS 3.1]
+Usage: ams [options...] <name>
+ -a, --about        Show about file
+ -c, --create       create a new kpi with the mentioned name
+ -d, --delete 	    delete the mentioned kpi
+ -e, --edit 	    edit the mentioned kpi
+ -h, --help	    Show help file
+ -p, --stop	    stop the mentioned kpis
+ -s, --start	    start the mentioned kpis
+ -t, --test	    run the kpi ONCE (for testing)
+ 
+ for more help :
+ ams --help [create | delete | edit | conf | stop | start | test]

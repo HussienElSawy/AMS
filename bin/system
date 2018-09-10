@@ -1,0 +1,73 @@
+#Variables
+kpi_path=$2
+bin=$1
+notifications="$bin/notifications"
+queries="$bin/query_templates"
+
+#sources
+. $kpi_path/kpi.conf
+
+#Functions
+Log() {
+Time=`date "+%H:%M:%S - %d.%m.%Y"`
+echo $Time " : "$1
+}
+
+
+
+#Logic
+if $queries/query.sql $kpi_path > nohup.tmp ; then
+	NullCondition=`grep -c "no rows selected" $kpi_path/file.csv`
+	#Check if query retrieved data
+	if [ $NullCondition -gt '0' ] ; then
+		Log "Query retrieved no data , system will abort!"
+	else
+		Log "Query retrieved data"
+		
+		#Send Slack
+		if [ $Send_Slack -eq 'Y' ] ; then
+			if [ $Use_Database -eq 'Y' ] ; then	
+				echo "$Slack_Subject" > output.tmp
+				`tr -d ' ' < file.csv >> output.tmp`
+				`sed 's/|/ | /g' output.tmp > $Slack_Output`
+			else 
+				echo "$Slack_Subject" > $Slack_Output
+				echo "$Output_File" >> $Slack_Output
+			fi	
+			if sh $notifications/slack $kpi_path > nohup.out ; then
+				Log "Sent to Slack"
+			else 
+				Log "Not Sent"
+			fi
+		elif [ $Send_Slack -eq 'N' ] ; then
+			Log "Slack Not Configured"
+		else
+			Log "Unknown Variable for Send_Slack"
+		fi
+		
+		#Send Mail
+		if [ $Send_Mail -eq 'Y' ] ; then
+			$queries/query_mail.sql $kpi_path > nohup.tmp
+			if sh $notifications/mail $kpi_path ; then
+				Log "Sent to mail"
+			else 
+				Log "Not Sent"
+			fi
+		elif [ $Send_Mail -eq 'N' ] ; then
+			Log "Mail Not Configured"
+		else
+			Log "Unknown Variable for Send_Mail"
+		fi
+		
+		#Send SMS
+		if [ $Send_SMS -eq 'Y' ] ; then
+			`$notifications/sms $kpi_path`
+		elif [ $Send_SMS == 'N' ] ; then
+			Log "SMS Not Configured"
+		else
+			Log "Unknown Variable for Send_SMS"
+		fi
+	fi
+fi
+#rm -f $kpi_path/output*
+#rm -f $kpi_path/nohup.tmp

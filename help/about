@@ -1,0 +1,72 @@
+#############################################################
+#		Automated Monitor System 3.1  		    #
+#	Developed By: 	Hussien El-Sawy			    #
+#	Contacts:				       	    #
+#			Mail: Hussien.ElSawy@outlook.com    #
+#			Mobile: +201001095182		    #
+#############################################################
+1) About The System
+####################
+This system is to monitor any database based system , and also
+it have the avilability to be used as a notification tool that
+can send different types of notifications 
+
+
+what can it do ?
+- run queries and send the output via different channels
+- run scripts and send the output via different channels
+
+channels:
+- mail (html based body)
+- mail (text based body)
+- mail (with attachement)
+- sms
+- slack
+
+depandincies:
+- Curl (to send to slack)
+- mailx (to send via mail)
+- sqlplus (to run queries)
+#############################################################
+2) Releases
+###########
+Version 1.0:
+-beta version
+used to send mail (text based) only , and can only run queries , 
+it have its own timer and doesnt depend on crontab
+
+Version 1.1:
+-Fixed bugs
+added : 
+- send mail (html based)
+- send mail (with attachement)
+- easier to handle
+
+Version 2.0:
+- Major release : new code
+added :
+- send sms
+
+Version 2.1:
+- Fixed bugs
+added :
+- send to slack channels
+
+
+Version 2.2:
+-Fixed bugs
+
+Version 3.0:
+Major release : new code
+- Different architecture + adding more functions
+added :
+- CLI commands
+all functions now are command based , and no editing in files needed
+Please use the command "AMS --help" to understand more
+
+Version 3.1:
+- Fixed Minor bugs
+added : 
+- added more CLI commands (edit|test|log|version)
+
+######################################################

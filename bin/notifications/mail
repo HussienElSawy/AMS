@@ -1,0 +1,23 @@
+kpi_path=$1
+. $kpi_path/kpi.conf
+
+list=$kpi_path/$Mail_List
+output=$kpi_path/$Mail_Output
+from=$Mail_From
+header=`echo $Mail_Subject"\n"$Mail_ContentType`
+
+SendMail() {
+for mail in `cat $list`
+do
+mailx -r "$from" -s "$header" $mail < $output
+done
+}
+
+if `SendMail` >> nohup.tmp ; then
+Time=`date "+%H:%M:%S - %d.%m.%Y"`
+echo $Time" : Mail Sent!"
+else
+Time=`date "+%H:%M:%S - %d.%m.%Y"`
+echo $Time" : Sending Mail Failed!"
+fi
+
