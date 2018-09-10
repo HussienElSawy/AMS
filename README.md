@@ -4,7 +4,7 @@
 
      ams [options] [name...]
 
-## DESCRIPTION**
+## DESCRIPTION
 
      ams is a tool to monitor any database  logs  using queries,
      it can also send notifications via several  channels  like:
@@ -20,7 +20,7 @@
      both short and long version require space between  them  and
      the value
 
-    * **-a, --about**
+   * **-a, --about**
           This  option  show the about file ,  and it doesnt take 
 	  any extra values
 		  
@@ -48,17 +48,17 @@
 		  
 	  Used together with create, delete, edit, stop, start, test
 		  
-    * **-M, --manual**
+   * **-M, --manual**
           Manual. Display the huge help text.
 
           Added in 3.1
 
-    * **-s, --start <name>**
+   * **-s, --start <name>**
           Starts specific KPI 	
 	  Can be used with "all" instead of "name" to start all KPIs
 					
 		  
-    * **-p, --stop <name>**
+   * **-p, --stop <name>**
           Starts specific KPI	
   	  Can be used with "all" instead of "name" to stop all KPIs
 
@@ -69,9 +69,9 @@
 	 
      the following packages MUST be installed for all features to
      function as required
-	 * **- CURL		(to send notifications to SLACK)**
-	 * **- SQLPLUS	(to connect to database)**
-	 * **- MAILX	(to send notifications to mail)**
+	  	 **- CURL		(to send notifications to SLACK)**
+	 	 **- SQLPLUS	(to connect to database)**
+		 **- MAILX 	(to send notifications to mail)**
 
 
 ## EXIT CODES
@@ -79,13 +79,13 @@
      corresponding error messages that may appear during bad con-
      ditions. At the time of this writing, the exit codes are:
 
-     * 1    Unsupported option.
+      1    Unsupported option.
 
-     * 2    Failed to start KPI.
+      2    Failed to start KPI.
 
-     * 3    Failed to stop KPI.
+      3    Failed to stop KPI.
 	 
-     *	X    More will be added in the future releases
+     	X    More will be added in the future releases
 
 
 ## AUTHORS / CONTRIBUTORS
@@ -139,6 +139,6 @@
   
 	**Mail: Hussien.ElSawy@outlook.com**
 	Subjects:
-		* **- AMS Request :** to request new function
-		* **- AMS Issue  :** to report an issue
-		* **- AMS General :** for any other topic
+		 **- AMS Request :** to request new function
+		 **- AMS Issue  :** to report an issue
+		 **- AMS General :** for any other topic
