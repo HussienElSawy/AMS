@@ -101,7 +101,7 @@
   You always find news about what's going on as well as the latest versions
   from the ams web pages, located at:
 
-        https://github.com/hussienelsawy/ams
+        [GITHUB](https://github.com/hussienelsawy/ams)
 
 ## SIMPLE USAGE
 
