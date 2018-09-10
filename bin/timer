@@ -1,0 +1,12 @@
+kpi_name=$1
+
+#sources
+. ../../bin/paths
+. kpi.conf
+
+
+while true
+do
+sh $bin/system "$bin" "$kpis/$kpi_name"
+sleep $Sleep_Time
+done

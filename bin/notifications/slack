@@ -1,0 +1,6 @@
+kpi_path=$1
+. $kpi_path/kpi.conf
+
+text=`cat $kpi_path/$Slack_Output`
+`/root/usr/bin/curl -k -x http://$Proxy_IP:$Proxy_Port -X POST -H '$Slack_ContentType' --data '{"text":'"'$text'"', "channel": '"'$Slack_Channel'"', "username": '"'$Slack_Username'"'}' $Slack_URL > /dev/null 2> /dev/null`
+rm -f $kpi_path/file.csv
