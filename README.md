@@ -21,46 +21,53 @@
      the value
 
    * **-a, --about**
-          This  option  show the about file ,  and it doesnt take 
-	  any extra values
+        
+	This  option  show the about file ,  and it doesnt take 
+	any extra values
 		  
    * **-c, --create <name>**
-          This will allow the user to create new KPI that will be
-	  edited with the edit option to configure it 
+        
+	This will allow the user to create new KPI that will be
+	edited with the edit option to configure it 
 		  
-          See also --edit.
+        See also --edit.
 		  
    *  **-d, --delete <name>**
-          This will  allow  the user  to delete  any KPI that was
-	  created before , this action can't be rolled back! 
+          
+	This will  allow  the user  to delete  any KPI that was
+	created before , this action can't be rolled back! 
 		  		  
    *  **-e, --edit [option] <name>**
-	  This will allow the user to start configuring/editing the
-	  configuration of the mentioned KPI
+	  
+	This will allow the user to start configuring/editing the
+	configuration of the mentioned KPI
 		  
-	  Used together with conf, sms_list, mail_list, query
-
-	  Added in 3.1
+	Used together with conf, sms_list, mail_list, query
+	Added in 3.1
 
    * **-h, --help [options]**
-          Usage help. This lists all current command line options
-          with a short description.
+          	
+		
+	Usage help. This lists all current command line options
+        with a short description.
 		  
-	  Used together with create, delete, edit, stop, start, test
+	Used together with create, delete, edit, stop, start, test
 		  
    * **-M, --manual**
-          Manual. Display the huge help text.
-
-          Added in 3.1
+          
+	Manual. Display the huge help text.
+        Added in 3.1
 
    * **-s, --start <name>**
-          Starts specific KPI 	
-	  Can be used with "all" instead of "name" to start all KPIs
+          
+	Starts specific KPI 	
+	Can be used with "all" instead of "name" to start all KPIs
 					
 		  
    * **-p, --stop <name>**
-          Starts specific KPI	
-  	  Can be used with "all" instead of "name" to stop all KPIs
+          
+	Starts specific KPI	
+  	Can be used with "all" instead of "name" to stop all KPIs
 
 
 ## REQUIRMENTS
@@ -101,7 +108,7 @@
   You always find news about what's going on as well as the latest versions
   from the ams web pages, located at:
 
-        [GITHUB](https://github.com/hussienelsawy/ams)
+  [GITHUB](https://github.com/hussienelsawy/ams)
 
 ## SIMPLE USAGE
 
@@ -137,8 +144,8 @@
   Please direct ams questions, feature requests and trouble reports to the mail
   mentioned below with the one of the following subjects
   
-	Mail: Hussien.ElSawy@outlook.com
+  **Mail: Hussien.ElSawy@outlook.com**
 	Subjects:
-		 - AMS Request : 	to request new function
-		 - AMS Issue  : 	to report an issue
-		 - AMS General : 	for any other topic
+		 * **AMS Request :**	to request new function
+		 * **AMS Issue   :** 	to report an issue
+		 * **AMS General :** 	for any other topic
