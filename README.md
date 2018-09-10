@@ -69,9 +69,9 @@
 	 
      the following packages MUST be installed for all features to
      function as required
-	  	 **- CURL		(to send notifications to SLACK)**
-	 	 **- SQLPLUS	(to connect to database)**
-		 **- MAILX 	(to send notifications to mail)**
+	  	 - CURL		(to send notifications to SLACK)
+	 	 - SQLPLUS	(to connect to database)
+		 - MAILX		(to send notifications to mail)
 
 
 ## EXIT CODES
@@ -85,7 +85,7 @@
 
       3    Failed to stop KPI.
 	 
-     	X    More will be added in the future releases
+      X    More will be added in the future releases
 
 
 ## AUTHORS / CONTRIBUTORS
@@ -137,8 +137,8 @@
   Please direct ams questions, feature requests and trouble reports to the mail
   mentioned below with the one of the following subjects
   
-	**Mail: Hussien.ElSawy@outlook.com**
+	__Mail: Hussien.ElSawy@outlook.com__
 	Subjects:
-		 **- AMS Request :** to request new function
-		 **- AMS Issue  :** to report an issue
-		 **- AMS General :** for any other topic
+		 - AMS Request : 	to request new function
+		 - AMS Issue  : 		to report an issue
+		 - AMS General : 	for any other topic
