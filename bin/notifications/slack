@@ -2,5 +2,11 @@ kpi_path=$1
 . $kpi_path/kpi.conf
 
 text=`cat $kpi_path/$Slack_Output`
-`/root/usr/bin/curl -k -x http://$Proxy_IP:$Proxy_Port -X POST -H '$Slack_ContentType' --data '{"text":'"'$text'"', "channel": '"'$Slack_Channel'"', "username": '"'$Slack_Username'"'}' $Slack_URL > /dev/null 2> /dev/null`
-rm -f $kpi_path/file.csv
+if [ $Use_Proxy == 'Y' ] ; then
+	`curl -1 -k -x http://$Proxy_IP:$Proxy_Port -X POST -H '$Slack_ContentType' --data '{"text":'"'$text'"', "channel": '"'$Slack_Channel'"', "username": '"'$Slack_Username'"'}' $Slack_URL > /dev/null 2> /dev/null`
+elif [ $Use_Proxy == 'N' ] ; then
+	`curl -1 -k -X POST -H '$Slack_ContentType' --data '{"text":'"'$text'"', "channel": '"'$Slack_Channel'"', "username": '"'$Slack_Username'"'}' $Slack_URL > /dev/null 2> /dev/null`
+else	
+	Time=`date "+%H:%M:%S - %d.%m.%Y"`
+	echo $Time" : Unknown Variable for Use_Proxy"
+fi

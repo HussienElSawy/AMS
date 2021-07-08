@@ -12,7 +12,7 @@ SYNOPSIS
 DESCRIPTION
      ams is a tool to monitor any database  logs  using queries,
      it can also send notifications via several  channels  like:
-     SLACK , SMS , MAIL (Text) , MAIL (HTML), MAIL (Attachement)
+     SLACK , SMS , MAIL (Text) , MAIL (HTML), MAIL (Attachment)
      it have its own timer, so it can be used instead of crontab
      
 OPTIONS
@@ -46,11 +46,21 @@ OPTIONS
 
 	  Added in 3.1
 
+     -g, --gui <start/stop>
+	  This will start or stop the GUI url=http://machine_ip:9889
+          
+          Added in 4.0
+
      -h, --help [options]
           Usage help. This lists all current command line options
           with a short description.
 		  
 	  Used together with create, delete, edit, stop, start, test
+     
+     -l, --log <name>
+         Show log for the running KPI
+
+         Added in 3.1
 		  
      -M, --manual
           Manual. Display the huge help text.
@@ -76,6 +86,10 @@ REQUIRMENTS
 	 - CURL		(to send notifications to SLACK)
 	 - SQLPLUS	(to connect to database)
 	 - MAILX	(to send notifications to mail)	
+         - CRONTAB      (to activate intervals)
+         - PYTHON 3.X   (for GUI)
+         - FLASK Library(for GUI)
+         - PORT 9889 to host the GUI on it
 
 
 EXIT CODES
@@ -102,7 +116,7 @@ WWW
 
 LATEST VERSION
 
-  You always find news about what's going on as well as the latest versions
+  You will always find news about what's going on as well as the latest versions
   from the ams web pages, located at:
 
         https://github.com/hussienelsawy/ams
@@ -110,32 +124,34 @@ LATEST VERSION
 SIMPLE USAGE
 
   Create/Delete new KPI:
-
         ams -c | -d new_kpi
-		ams --create | --delete new_kpi
+	ams --create | --delete new_kpi
 
   Start/Stop all KPIs:
-
         ams -s | -p all
-		ams --start | --stop all
+	ams --start | --stop all
 		
   Start/Stop specific KPIs:
-
         ams -s | -p new_kpi
-		ams --start | --stop new_kpi
+	ams --start | --stop new_kpi
  
   Edit Configurations for a KPI:
-		
-		ams -e --conf new_kpi
+	ams -e --conf new_kpi
 
   Add Mail list to a specific KPI:
-  
-		ams -e --mail_list new_kpi
+	ams -e --mail_list new_kpi
 
   Add SMS list to a specific KPI:
+	ams -e --sms_list new_kpi
   
-		ams -e --sms_list new_kpi
-		
+  Add Query to a specific KPI:
+        ams -e --query new_kpi
+
+  Start GUI:
+        ams -g start
+
+  Stop GUI:
+        ams -g stop
 
 
   Please direct ams questions, feature requests and trouble reports to the mail

@@ -4,10 +4,12 @@ Usage: ams [options...] <name>
  -c, --create       create a new kpi with the mentioned name
  -d, --delete 	    delete the mentioned kpi
  -e, --edit 	    edit the mentioned kpi
+ -g, --gui	    activate/deactivate GUI for AMS
  -h, --help	    Show help file
+ -l, --log	    Show log file for mentioned kpi
+ -M, --manual       Show AMS manual
  -p, --stop	    stop the mentioned kpis
  -s, --start	    start the mentioned kpis
- -t, --test	    run the kpi ONCE (for testing)
  
  for more help :
- ams --help [create | delete | edit | conf | stop | start | test]
+ ams --help [create | delete | edit | conf | stop | start | test | gui]

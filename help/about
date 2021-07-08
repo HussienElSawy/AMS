@@ -1,5 +1,5 @@
 #############################################################
-#		Automated Monitor System 3.1  		    #
+#		Automated Monitor System 4.1  		    #
 #	Developed By: 	Hussien El-Sawy			    #
 #	Contacts:				       	    #
 #			Mail: Hussien.ElSawy@outlook.com    #
@@ -23,10 +23,17 @@ channels:
 - sms
 - slack
 
-depandincies:
+DEPENDENCIES:
+CLI dependencies:
 - Curl (to send to slack)
 - mailx (to send via mail)
 - sqlplus (to run queries)
+- crontab (to use intervals)
+
+GUI dependencies:
+- AMS CLI should be available
+- Python 3.X
+- Flask Library
 #############################################################
 2) Releases
 ###########
@@ -67,6 +74,15 @@ Please use the command "AMS --help" to understand more
 Version 3.1:
 - Fixed Minor bugs
 added : 
-- added more CLI commands (edit|test|log|version)
+- added more CLI commands (edit|log|version)
 
+Version 4.0:
+added:
+- added GUI that can be activated/deactivated with CLI
+(ams -g start/stop)
+
+Version 4.1:
+- Fixed Intervals issue
+- Updated Help files
+- Fixed minor bugs in GUI
 ######################################################

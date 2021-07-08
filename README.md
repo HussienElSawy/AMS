@@ -8,7 +8,7 @@
 
      ams is a tool to monitor any database  logs  using queries,
      it can also send notifications via several  channels  like:
-     SLACK , SMS , MAIL (Text) , MAIL (HTML), MAIL (Attachement)
+     SLACK , MAIL (Text) , MAIL (HTML), MAIL (Attachement)
      it have its own timer, so it can be used instead of crontab
      
 ## OPTIONS
@@ -44,7 +44,14 @@
 		  
 	Used together with conf, sms_list, mail_list, query
 	Added in 3.1
-
+   
+   *  **-g, --gui <start/stop>**
+   
+    Start or STOP GUI (it uses port 9889)
+	URL: http://IP:9889
+	
+	Added in 4.0
+	
    * **-h, --help [options]**
           	
 		
@@ -52,7 +59,13 @@
         with a short description.
 		  
 	Used together with create, delete, edit, stop, start, test
-		  
+   
+   * **-l, --log <name>**
+          
+	Show KPI Logs.
+   
+      Added in 3.1
+	  
    * **-M, --manual**
           
 	Manual. Display the huge help text.
@@ -139,7 +152,9 @@
   
 		ams -e --sms_list new_kpi
 		
-
+  **Start GUI [IP:9889]:**
+  
+		ams -g start
 
   Please direct ams questions, feature requests and trouble reports to the mail
   mentioned below with the one of the following subjects

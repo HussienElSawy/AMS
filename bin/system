@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Variables
 kpi_path=$2
 bin=$1
@@ -6,68 +8,137 @@ queries="$bin/query_templates"
 
 #sources
 . $kpi_path/kpi.conf
-
+. $bin/paths
+	
 #Functions
+#Log Function   
 Log() {
 Time=`date "+%H:%M:%S - %d.%m.%Y"`
-echo $Time " : "$1
+echo $Time" : "$1
+}
+
+#Clean up function that cleans all not needed files after using them
+CleanUp() {
+rm -f $kpi_path/output*
+rm -f $kpi_path/nohup.tmp
+rm -f $kpi_path/file.csv
+rm -f $kpi_path/$Slack_Output
+rm -f $kpi_path/$Output_File
+rm -f $kpi_path/$Mail_Output
+Log $1
 }
 
 
-
 #Logic
-if $queries/query.sql $kpi_path > nohup.tmp ; then
-	NullCondition=`grep -c "no rows selected" $kpi_path/file.csv`
-	#Check if query retrieved data
-	if [ $NullCondition -gt '0' ] ; then
-		Log "Query retrieved no data , system will abort!"
-	else
-		Log "Query retrieved data"
+if [ $Use_Database == 'Y' ] ; then
+	if $queries/query.sql $kpi_path > nohup.tmp ; then
+		NullCondition=`grep -c "no rows selected" $kpi_path/file.csv`
+		#Check if query retrieved data
+		if [ $NullCondition -gt '0' ] ; then
+			Log "Query generated no data , system will abort!"
+      exit 1
+		else
+			Log "Query generated data"
 		
-		#Send Slack
-		if [ $Send_Slack -eq 'Y' ] ; then
-			if [ $Use_Database -eq 'Y' ] ; then	
+			#Send Slack
+			if [ $Send_Slack == 'Y' ] ; then
 				echo "$Slack_Subject" > output.tmp
 				`tr -d ' ' < file.csv >> output.tmp`
-				`sed 's/|/ | /g' output.tmp > $Slack_Output`
-			else 
-				echo "$Slack_Subject" > $Slack_Output
-				echo "$Output_File" >> $Slack_Output
-			fi	
-			if sh $notifications/slack $kpi_path > nohup.out ; then
-				Log "Sent to Slack"
-			else 
-				Log "Not Sent"
+				QueryCondition=`grep -c \| $kpi_path/file.csv`
+				if [ $QueryCondition -gt '0' ] ; then
+					`sed 's/|/ | /g' output.tmp > $Slack_Output`
+				else
+					`cat output.tmp > $Slack_Output`
+				fi
+				if bash $notifications/slack $kpi_path > nohup.out ; then
+					Log "Sent to Slack"
+				else 
+					Log "Not Sent to Slack"
+				fi
+			elif [ $Send_Slack == 'N' ] ; then
+				Log "Slack Not Configured"
+			else
+				Log "Unknown Variable for Send_Slack"
 			fi
-		elif [ $Send_Slack -eq 'N' ] ; then
-			Log "Slack Not Configured"
-		else
-			Log "Unknown Variable for Send_Slack"
-		fi
-		
-		#Send Mail
-		if [ $Send_Mail -eq 'Y' ] ; then
-			$queries/query_mail.sql $kpi_path > nohup.tmp
-			if sh $notifications/mail $kpi_path ; then
-				Log "Sent to mail"
-			else 
-				Log "Not Sent"
+			
+			#Send Mail
+			if [ $Send_Mail == 'Y' ] ; then
+				$queries/query_mail.sql $kpi_path > nohup.tmp
+				if bash $notifications/mail $kpi_path ; then
+					Log "Sent to Mail"
+				else 
+					Log "Not Sent to Mail"
+				fi
+			elif [ $Send_Mail == 'N' ] ; then
+				Log "Mail Not Configured"
+			else
+				Log "Unknown Variable for Send_Mail"
 			fi
-		elif [ $Send_Mail -eq 'N' ] ; then
-			Log "Mail Not Configured"
-		else
-			Log "Unknown Variable for Send_Mail"
-		fi
-		
-		#Send SMS
-		if [ $Send_SMS -eq 'Y' ] ; then
-			`$notifications/sms $kpi_path`
-		elif [ $Send_SMS == 'N' ] ; then
-			Log "SMS Not Configured"
-		else
-			Log "Unknown Variable for Send_SMS"
+			
+			#must add the SMS logic
+			#Send SMS
+			if [ $Send_SMS == 'Y' ] ; then
+				`$notifications/sms $kpi_path`
+			elif [ $Send_SMS == 'N' ] ; then
+				Log "SMS Not Configured"
+			else
+				Log "Unknown Variable for Send_SMS"
+			fi
 		fi
 	fi
+elif [ $Use_Script == 'Y' ] ; then
+	cd $Script_Folder
+	if sh $Script_File > $kpi_path/$Output_File ; then
+		cd - > /dev/null
+		NullScript=`grep -c "no output" $kpi_path/$Output_File`
+		#Check if script retrieved data
+		if [ $NullScript -gt '0' ] ; then
+				Log "Script generated no output , system will abort!"
+        exit 1
+		else
+			chmod 777 $kpi_path/$Output_File
+			Log "Script generated data"
+			#Send Slack
+			if [ $Send_Slack == 'Y' ] ; then
+				if bash $notifications/slack $kpi_path > nohup.out ; then
+					echo "$Slack_Subject" > $Slack_Output
+					`cat $kpi_path/$Output_File >> $Slack_Output`
+					Log "Sent to Slack"
+				else 
+					Log "Not Sent"
+				fi
+			elif [ $Send_Slack == 'N' ] ; then
+				Log "Slack Not Configured"
+			else
+				Log "Unknown Variable for Send_Slack"
+			fi
+				
+			#Send Mail
+			if [ $Send_Mail == 'Y' ] ; then
+				`cat $kpi_path/$Output_File > $Mail_Output`
+				if bash $notifications/mail $kpi_path ; then
+					Log "Sent to Mail"
+				else 
+					Log "Not Sent to Mail"
+				fi
+			elif [ $Send_Mail == 'N' ] ; then
+				Log "Mail Not Configured"
+			else
+				Log "Unknown Variable for Send_Mail"
+			fi
+				
+			#must add the SMS logic
+			#Send SMS
+			if [ $Send_SMS == 'Y' ] ; then
+				`$notifications/sms $kpi_path`
+			elif [ $Send_SMS == 'N' ] ; then
+				Log "SMS Not Configured"
+			else
+				Log "Unknown Variable for Send_SMS"
+			fi
+		fi	
+	fi
+else
+	Log "scripts & database are not configured"
 fi
-#rm -f $kpi_path/output*
-#rm -f $kpi_path/nohup.tmp
+#CleanUp "Clean up completed !"

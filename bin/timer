@@ -1,12 +1,27 @@
-kpi_name=$1
+#!/bin/bash
 
 #sources
 . ../../bin/paths
 . kpi.conf
 
+kpi_name=$1
 
-while true
-do
-sh $bin/system "$bin" "$kpis/$kpi_name"
-sleep $Sleep_Time
-done
+if [ $Use_Timer == 'Y' ] ; then
+	while true
+	do
+		bash $bin/system "$bin" "$kpis/$kpi_name"
+		sleep $Sleep_Time
+	done
+elif [ $Use_Intervals == 'Y' ] ; then
+	for time in `cat intervals`
+	do
+		hour=`echo $time | awk -F":" {'print $1'}`
+		min=`echo $time | awk -F":" {'print $2'}`
+		crontab -l > crontab_tmp
+		echo "$min $hour * * * bash $bin/system \"$bin\" \"$kpis/$kpi_name\"" >> crontab_tmp
+		crontab crontab_tmp
+	done
+else
+	Time=`date "+%H:%M:%S - %d.%m.%Y"`
+	echo $Time" : Unknown Variable for Use_Intervals"
+fi
