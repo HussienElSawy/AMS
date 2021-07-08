@@ -1,11 +1,51 @@
 #!/bin/bash
 path=`pwd` #home directory
-kpis=$path/kpis #kpis direcotory
-bin=$path/bin #bin directory
+bin=$path/bin #system directory
 
+#Health Check 
+#This part is to check for the needed folders
+kpis_exist=`ls $path | grep -c kpis`
+if [ $kpis_exist -lt '1' ] ; then
+	mkdir kpis
+fi
+backup_exist=`ls $bin | grep -c backup`
+if [ $backup_exist -lt '1' ] ; then
+	mkdir $bin/backup
+fi
+scripts_exist=`ls $path | grep -c scripts`
+if [ $scripts_exist -lt '1' ] ; then
+	mkdir scripts
+fi
+
+#Generate paths file
+kpis=$path/kpis
+scripts=$path/scripts
 echo "path=$path" > $bin/paths
 echo "kpis=$kpis" >> $bin/paths
 echo "bin=$bin" >> $bin/paths
+echo "scripts=$scripts" >> $bin/paths
+
+#show if app exist
+check_app()
+{
+app_exist=`compgen -c | grep -c '^1$'`
+if [ $app_exist -lt '1' ] ; then
+	echo "the following software is needed for AMS to work properly"
+	echo "- $1"
+	exit 1
+fi	
+}
+
+#check needed apps
+#check_app "sqlplus"
+#check_app "curl"
+#check_app "sendmail"
+
+
+#End of Health Check#
+#############################################################################
+#Give needed permission to files and folders
+
 chmod -R 777 $path
 
 #show error messages
@@ -16,30 +56,29 @@ value="$2"
 case $key in
 	help_e)
 		echo "ams: try 'ams --help' or 'ams --manual' for more information"
-		;;
-	1)
-		echo "Error 1: Unsupported option"
-		;;
+	;;
 	edit_e)
 		echo "Please review help \"AMS --help [option..]\""
-		;;
+	;;
+	1)
+		echo "Error 1: Unsupported option"
+	;;
 	2)
 		echo "Error 2: Failed to start KPI"
-		;;
+	;;
 	3)
 		echo "Error 3: Failed to stop KPI"
-		;;
+	;;
 	*)
 		echo "unknown error"
-		;;
+	;;
 esac
 }
 
 #check if command had empty values
 check_value()
 {
-if [ -z $1 ]
-then
+if [ -z $1 ] ; then
    error_message "help_e"
    exit 1
 fi
@@ -48,8 +87,7 @@ fi
 #start the kpi
 start_value()
 {
-if [ $1 == "all" ]
-  then
+if [ $1 == "all" ] ; then
 	for i in `ps -ef | grep "$path" | grep -v grep | awk '{ print $2 }'`
 	do
 		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
@@ -61,14 +99,19 @@ if [ $1 == "all" ]
 	for i in `cat all.txt`
 	do
 		cd $kpis/$i
+		nohup_exist=`ls | grep -c nohup.out`
 		echo "Starting $i ..."
-		nohup $bin/timer $i &
+		if [ $nohup_exist -gt '0' ] ; then
+			Time=`date "+%d-%m-%Y.%H.%M"`
+			mv nohup.out Logs/nohup.$Time
+		fi
+		nohup bash $bin/timer $i &
 		cd $path
 		rm -f all.txt
 	done
-echo "All KPIs Started"
+	echo "All KPIs Started"
 else
-   cd $kpis/$1
+	cd $kpis/$1
 	echo "Starting $1 ..."
 	for i in `ps -ef | grep "$path" | grep -v grep | grep -i $1 | awk '{ print $2 }'`
 	do
@@ -77,7 +120,12 @@ else
 			kill -9 $j
 		done
 	done
-	nohup $bin/timer $1 &
+	nohup_exist=`ls | grep -c nohup.out`
+	if [ $nohup_exist -gt '0' ] ; then
+		Time=`date "+%d-%m-%Y.%H.%M"`
+		mv nohup.out Logs/nohup.$Time
+	fi
+	`nohup bash $bin/timer $1 > /dev/null 2>&1 &`
 	cd $path
 	echo "Started"
 fi
@@ -86,9 +134,8 @@ fi
 #stop the kpi
 stop_value()
 {
-if [ $1 == "all" ]
-  then
-  echo "Stopping All KPIs"
+if [ $1 == "all" ] ; then
+	echo "Stopping All KPIs"
     for i in `ps -ef | grep "$path" | grep -v grep | awk '{ print $2 }'`
 	do
 		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
@@ -96,26 +143,31 @@ if [ $1 == "all" ]
 			kill -9 $j
 		done
 	done
-echo "All KPIs Stopped!"
+	echo "All KPIs Stopped!"
+	crontab -l | grep -v "$kpis" > $bin/crontab_tmp
+	crontab $bin/crontab_tmp
 else
-echo "Stopping $1"
-   for i in `ps -ef | grep "$path" | grep -v grep | grep -i $1 | awk '{ print $2 }'`
+	echo "Stopping $1"
+	for i in `ps -ef | grep "$path" | grep -v grep | grep -i $1 | awk '{ print $2 }'`
 	do
 		for j in `ps -ef | grep -v grep | grep $i | awk '{ print $2 }'`
 		do
 			kill -9 $j
 		done
 	done
-sleep 1
-echo "$1 Stopped!"
+	crontab -l | grep -wv "$kpis/$1" > $bin/crontab_tmp
+	crontab $bin/crontab_tmp
+	sleep 1
+	echo "$1 Stopped!"
 fi
 }
 
 
+#edit configurations
 edit_value()
 {
 case $1 in
-	   --conf | -c)
+		--conf | -c)
 			check_value $2
 			vi $kpis/$2/kpi.conf
 			exit 1
@@ -123,65 +175,108 @@ case $1 in
 		--query | -q)
 			check_value $2
 			. $kpis/$2/kpi.conf
-			vi $path/kpis/$2/$Query_File
+			vi $kpis/$2/$Query_File
 			exit 1
 		;;
 		--mail_list | -m)
 			check_value $2
 			. $kpis/$2/kpi.conf
-			vi $path/kpis/$2/$Mail_List
+			vi $kpis/$2/$Mail_List
 			exit 1
 		;;
 		--sms_list | -s)
 			check_value $2
 			. $kpis/$2/kpi.conf
-			vi $path/kpis/$2/$SMS_List
+			vi $kpis/$2/$SMS_List
 			exit 1
 		;;
-       *)
-         error_message "edit_e"
-		 error_message "help_e"
-         exit 1
-      ;;
+		--intervals | -i)
+			check_value $2
+			. $kpis/$2/kpi.conf
+			vi $kpis/$2/$Intervals_File
+			exit 1
+		;;
+		*)
+			error_message "edit_e"
+			error_message "help_e"
+			exit 1
+		;;
 	esac
 }
 
+#show version
+version()
+{	
+	#AMS Data
+	tool_name="Automated Monitoring System"
+	tool_version="V4.1"
+	
+	
+	#Kernel Data
+	kernel=`curl --version | awk {'print $3'} | head -n 1`
+	
+	#machine data
+	machine_name=`uname -n`
+	
+	echo ""
+	echo "$tool_name [$tool_version]"
+	echo "Kernel:	$kernel"
+	echo "Machine: $machine_name"
+	echo ""
+	echo "This software is a free license that should NOT be used for enterpirse usage!"
+	echo "made by: Hussien El-Sawy"
+}
+
+#help menu
 help_value()
 {
 	case $1 in
-	   conf | create | delete | edit | stop | start | test)
+		conf | create | delete | edit | stop | start | test | log)
 			more $path/help/help_$1
 			exit 1
 		;;
        *)
-		 error_message "1"
-         error_message "help_e"
-         exit 1
-      ;;
+			error_message "1"
+			error_message "help_e"
+			exit 1
+		;;
 	esac
 }
+
 #CLI Functions (1 variable or less)
 while [[ $# -le 1 ]]
 do
 	key="$1"
 	case $key in
-	   --help | -h )
-          more $path/help/help
-		  exit 1
-       ;;
-	   --about | -a )
-          more $path/help/about
-		  exit 1
-       ;;
-	   --manual | -M )
-          more $path/help/manual
-		  exit 1
-       ;;
-       *)
-	     error_message "1"
-         error_message "help_e"
-         exit 1
-      ;;
+		--help | -h )
+			more $path/help/help
+			exit 1
+		;;
+		--about | -a )
+			more $path/help/about
+			exit 1
+		;;
+		--manual | -M )
+			more $path/help/manual
+			exit 1
+		;;
+		--backup | -b)
+			cp -rf $path $path/bin/backup
+			exit 1
+		;;
+		--restore | -r)
+			cp -rf $path/bin/backup ../../
+			exit 1
+		;;
+		--version | -v)
+			version
+			exit 1
+		;;
+		*)
+			error_message "1"
+			error_message "help_e"
+			exit 1
+		;;
 	esac
 done
 
@@ -193,34 +288,55 @@ do
 	value2="$3"
 	check_value $value
 	case $key in
-       --start | -s)
-		  start_value $value
-		  exit 1
-       ;;
-	   --stop | -p)
-		  stop_value $value
-		  exit 1
-       ;;
-	   --create | -c)
-		  cp -r $bin/template $kpis/$value
-		  exit 1
-       ;;
-	   --delete | -d)
-		  rm -r $path/kpis/$value
-		  exit 1
-       ;;
-	   --edit | -e)
+		--start | -s)
+			start_value $value
+			exit 1
+		;;
+		--stop | -p)
+			stop_value $value
+			exit 1
+		;;
+		--create | -c)
+			cp -r $bin/template $kpis/$value
+			mkdir $kpis/$value/Logs
+			exit 1
+		;;
+		--delete | -d)
+			rm -rf $kpis/$value
+			exit 1
+		;;
+		--edit | -e)
 			edit_value $value $value2
+			cp -rf $path $path/bin/backup
 			exit 1
 		;;
 		--help | -h)
-		help_value $value
-		exit 1
+			help_value $value
+			exit 1
 		;;
-       *)
-	     error_message "1" 
-         error_message "help_e"
-         exit 1
-      ;;
+		--test | -t)
+			start_value $value
+			sleep 1
+			stop_value $value
+			exit 1
+		;;
+		--log | -l)
+			`more $kpis/$value/nohup.out`
+			exit 1
+		;;
+		--gui | -g)
+			if [ $value == 'start' ]; then
+				`cd $bin/webapp ; nohup python3 $bin/webapp/main.py > /dev/null 2>&1 &`
+				echo 'GUI Started at port 9889'
+			elif [ $value == 'stop' ]; then
+				stop_value "webapp/main.py"
+			fi
+			exit 1
+		;;
+		*)
+			error_message "1" 
+			error_message "help_e"
+			exit 1
+		;;
 	esac
 done

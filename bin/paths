@@ -1,3 +1,4 @@
-path=/tibco/AMS
-kpis=/tibco/AMS/kpis
-bin=/tibco/AMS/bin
+path=/mnt/e/Work/Tools/Automated_Monitoring_System/AMS
+kpis=/mnt/e/Work/Tools/Automated_Monitoring_System/AMS/kpis
+bin=/mnt/e/Work/Tools/Automated_Monitoring_System/AMS/bin
+scripts=/mnt/e/Work/Tools/Automated_Monitoring_System/AMS/scripts
