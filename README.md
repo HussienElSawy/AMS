@@ -89,9 +89,10 @@
 	 
      the following packages MUST be installed for all features to
      function as required
-	  	 - CURL		(to send notifications to SLACK)
-	 	 - SQLPLUS	(to connect to database)
-		 - MAILX	(to send notifications to mail)
+	  	 - CURL			(to send notifications to SLACK)
+	 	 - SQLPLUS		(to connect to database)
+		 - MAILX		(to send notifications to mail)
+   		 - PYTHON3 with FLASK	(to use the GUI)
 
 
 ## EXIT CODES
